@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yawar | Full Stack Developer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(180deg, #0f172a 0%, #1e3a8a 50%, #075985 100%);
+      color: #f8fafc;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .wave-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.3;
+    }
+    .wave-bg canvas {
+      width: 100%;
+      height: 100%;
+    }
+    .section-title {
+      border-bottom: 2px solid #38bdf8;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #a5f3fc;
+      transition: width 0.5s ease;
+    }
+    .section-title.in-view::after {
+      width: 100%;
+    }
+    .card {
+      background-color: rgba(30, 41, 59, 0.9);
+      color: #e2e8f0;
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .btn-custom {
+      background-color: #38bdf8;
+      color: #0f172a;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.3s ease;
+    }
+    .btn-custom::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: #a5f3fc;
+      transition: left 0.3s ease;
+      z-index: 0;
+    }
+    .btn-custom:hover::before {
+      left: 0;
+    }
+    .btn-custom:hover {
+      color: #0f172a;
+    }
+    .btn-custom span, .btn-custom i {
+      position: relative;
+      z-index: 1;
+    }
+    a { color: #38bdf8; text-decoration: none; }
+    a:hover { color: #a5f3fc; text-decoration: underline; }
+    footer {
+      text-align: center;
+      padding-top: 2rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .sidebar {
+      background-color: rgba(30, 41, 59, 0.95);
+      padding: 2rem;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      color: #e2e8f0;
+      box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .sidebar h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    .sidebar ul li.in-view {
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+    }
+    .sidebar ul li a i {
+      margin-right: 0.5rem;
+    }
+    .content {
+      margin-left: 0;
+      padding: 2rem;
+      transition: margin-left 0.3s ease;
+    }
+    .content.shifted {
+      margin-left: 250px;
+    }
+    .hero {
+      opacity: 0;
+      transform: translateY(50px);
+      position: relative;
+    }
+    .hero.in-view {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .hero img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1rem;
+      border: 3px solid #38bdf8;
+      transition: transform 0.3s ease;
+    }
+    .hero img:hover {
+      transform: scale(1.1);
+    }
+    .hamburger {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      color: #f8fafc;
+      background: none;
+      border: none;
+      z-index: 1100;
+      cursor: pointer;
+    }
+    .project-links {
+      margin-top: 1rem;
+    }
+    .project-links a {
+      color: #38bdf8;
+      margin-right: 1rem;
+      font-size: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+    }
+    .project-links a i {
+      margin-right: 0.3rem;
+    }
+    .project-links a:hover {
+      color: #a5f3fc;
+    }
+    .contact-info p {
+      display: flex;
+      align-items: center;
+    }
+    .contact-info p i {
+      margin-right: 0.5rem;
+      font-size: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        left: -100%;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .content.shifted {
+        margin-left: 0;
+      }
+      .hero img {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wave-bg">
+    <canvas id="waveCanvas"></canvas>
+  </div>
+
+  <button class="hamburger" aria-label="Toggle menu">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar">
+    <h2>Yawar</h2>
+    <ul>
+      <li><a href="#about"><i class="fas fa-user"></i> About</a></li>
+      <li><a href="#experience"><i class="fas fa-briefcase"></i> Experience</a></li>
+      <li><a href="#skills"><i class="fas fa-tools"></i> Skills</a></li>
+      <li><a href="#projects"><i class="fas fa-project-diagram"></i> Projects</a></li>
+      <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <div class="text-center mb-5 hero">
+      <img src="https://via.placeholder.com/150" alt="Profile Picture">
+      <h1 class="display-4 fw-bold">Hi, I'm Yawar 👨‍💻</h1>
+      <p class="lead">Full-Stack Developer at NIELIT Srinagar | MERN & Flask Developer</p>
+      <a href="Yawar_Resume.pdf" download class="btn btn-custom mt-3"><i class="fa fa-download"></i> <span>Download Resume</span></a>
+    </div>
+
+    <div id="about" class="mb-5">
+      <h2 class="section-title">About</h2>
+      <p>I'm a passionate full-stack developer working as an in-house developer for NIELIT Srinagar, with strong backend expertise in Flask and Node.js. I focus on building robust and efficient web applications.</p>
+    </div>
+
+    <div id="experience" class="mb-5">
+      <h2 class="section-title">Experience</h2>
+      <ul>
+        <li>In-house Full-Stack Developer at NIELIT Srinagar, developing web applications with Flask and MySQL</li>
+        <li>Freelance full-stack web development (Flask, React, MySQL)</li>
+      </ul>
+    </div>
+
+    <div id="skills">
+      <h2 class="section-title">Skills</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card p-3">
+            <h5><i class="fa fa-code"></i> Frontend</h5>
+            <ul>
+              <li>HTML5, CSS3, Bootstrap, Tailwind CSS</li>
+              <li>JavaScript, React.js</li>
+              <li>Responsive Web Design</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3">
+            <h5><i class="fa fa-server"></i> Backend</h5>
+            <ul>
+              <li>Node.js, Express.js</li>
+              <li>Python, Flask</li>
+              <li>API Development</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3">
+            <h5><i class="fa fa-database"></i> Tools & DB</h5>
+            <ul>
+              <li>MongoDB, MySQL, MSSQL</li>
+              <li>Git & GitHub, VS Code</li>
+              <li>PDF.js, Bootstrap Modals</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="projects" class="mt-5">
+      <h2 class="section-title">Projects</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card p-3">
+            <h5>📚 Book Rating System</h5>
+            <p>Flask-based system tracking hits, scroll time, and reading time with a modal PDF viewer and star rating system.</p>
+            <div class="project-links">
+              <a href="https://github.com/yawar/book-rating-system" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3">
+            <h5>📦 Inventory Management System</h5>
+            <p>Role-based system for assigning inventory with auto-generated receipts and history tracking (Flask + MySQL).</p>
+            <div class="project-links">
+              <a href="https://github.com/yawar/inventory-management-system" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3">
+            <h5>🎓 Event Management System</h5>
+            <p>Role-based dashboard for event tracking, with admin CRUD, import/export data (Flask, Bootstrap, MySQL).</p>
+            <div class="project-links">
+              <a href="https://github.com/yawar/event-management-system" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3">
+            <h5>💰 Maintenance Allowance System</h5>
+            <p>System for managing maintenance allowances with role-based access, automated calculations, and history tracking (Flask, Bootstrap, MySQL).</p>
+            <div class="project-links">
+              <a href="https://github.com/yawar/maintenance-allowance-system" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="contact" class="mt-5">
+      <h2 class="section-title">Contact</h2>
+      <div class="contact-info">
+        <p><i class="fas fa-envelope"></i> Email: <a href="mailto:yawar.dev@example.com">yawar.dev@example.com</a></p>
+        <p><i class="fab fa-github"></i> GitHub: <a href="https://github.com/yawar" target="_blank">github.com/yawar</a></p>
+      </div>
+    </div>
+
+    <footer>
+      © <span id="year"></span> Yawar. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const sidebar = document.querySelector(".sidebar");
+    const content = document.querySelector(".content");
+    const hamburger = document.querySelector(".hamburger");
+    const hamburgerIcon = hamburger.querySelector("i");
+
+    hamburger.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+      content.classList.toggle("shifted");
+      hamburgerIcon.classList.toggle("fa-bars");
+      hamburgerIcon.classList.toggle("fa-times");
+    });
+
+    gsap.from(".hero img", { scale: 0, duration: 1, ease: "elastic.out(1, 0.3)" });
+    gsap.from(".sidebar h2", { x: -100, opacity: 0, duration: 0.8, delay: 0.2 });
+    document.querySelectorAll(".sidebar ul li").forEach((li, index) => {
+      gsap.to(li, {
+        opacity: 1,
+        x: 0,
+        duration: 0.5,
+        delay: index * 0.1,
+        onComplete: () => li.classList.add("in-view")
+      });
+    });
+
+    gsap.to(".hero", {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      onComplete: () => document.querySelector(".hero").classList.add("in-view")
+    });
+
+    document.querySelectorAll(".section-title").forEach(title => {
+      ScrollTrigger.create({
+        trigger: title,
+        start: "top 80%",
+        onEnter: () => title.classList.add("in-view")
+      });
+    });
+
+    document.querySelectorAll(".card").forEach((card, index) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top 90%",
+        },
+        y: 50,
+        opacity: 0,
+        duration: 0.6,
+        delay: index * 0.2
+      });
+    });
+
+    const canvas = document.getElementById("waveCanvas");
+    const ctx = canvas.getContext("2d");
+    let time = 0;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    function drawWave() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      for (let x = 0; x < canvas.width; x++) {
+        const y = Math.sin(x * 0.005 + time) * 50 + canvas.height * 0.7;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(6, 182, 212, 0.2)";
+      ctx.fill();
+      time += 0.02;
+      requestAnimationFrame(drawWave);
+    }
+    drawWave();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
